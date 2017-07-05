@@ -1,0 +1,52 @@
+package br.com.telesul.service;
+
+import java.util.List;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
+import com.google.gson.Gson;
+
+import br.com.telesul.dao.UsuarioDAO;
+import br.com.telesul.domain.Usuario;
+
+
+@Path("usuario")
+public class UsuarioService {
+	//http://127.0.01:8080/CoreTelesul/rest/usuario
+	@GET
+	public String listar(){
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+				
+		List<Usuario> usuarios = usuarioDAO.listar();
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(usuarios);
+		
+		return json;
+		
+		
+	}
+	//http://127.0.01:8080/CoreTelesul/rest/usuario/1
+	@GET
+	@Path("{codigo}")
+	public String buscar(Long codigo){
+		
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		Usuario usuario = usuarioDAO.buscar(codigo);
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(usuario);
+		
+		return json;
+		
+		
+	}
+	
+
+	
+	
+	
+	
+	
+
+}

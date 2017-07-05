@@ -1,0 +1,29 @@
+package br.com.telesul.test;
+
+import org.junit.Test;
+
+import br.com.telesul.dao.UsuarioDAO;
+import br.com.telesul.domain.Usuario;
+
+public class UsuarioDAOtest {
+	
+	@Test
+	public void salvar(){
+		
+		
+		Usuario usuario = new Usuario();
+		
+		usuario.setNome("Felippe");
+		usuario.setSenha("12345");
+		
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		usuarioDAO.salvar(usuario);
+		
+		
+		
+	}
+	
+	
+	
+
+}

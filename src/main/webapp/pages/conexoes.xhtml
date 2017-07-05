@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:composition template = "/template/modeloGeral.xhtml">
+		<ui:define name="conteudo">
+		<f:metadata>
+				
+				<!--   
+				<f:event listener="#{usuarioBean.carregarPesquisa}" type="preRenderView"/>
+				-->
+			
+			</f:metadata>
+			
+			<p:growl id="mensagem" />
+			<h:form id="frmBases">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="Bancos e Bases de Dados" />
+					</f:facet>
+				</p:toolbar>
+			</h:form>
+			<br></br>
+			<p:panel id="pnlConCad" header="Nova" toggleable="true" toggleOrientation="horizontal" 
+			rendered="#{autenticacaoBean.usuarioLogado.perfil == 'Administrador'}">
+ 				<h:form id="frmConCad">
+	 				<h:panelGrid columns="2">
+	 					<h:outputLabel value="Banco" />
+							<p:selectOneMenu value="#{conexaoServerBean.conexao.banco}" >
+								<f:selectItem itemValue="" itemLabel="Selecione..."/>
+								<f:selectItem itemValue="Cache 2009" itemLabel="Cache 2009"/>
+								<f:selectItem itemValue="Cache 2016" itemLabel="Cache 2016"/>
+								<f:selectItem itemValue="MySQL" itemLabel="MySQL"/>
+								<f:selectItem itemValue="Postgres" itemLabel="Postgres"/>
+								<f:selectItem itemValue="SQLServer" itemLabel="SQLServer"/>
+							</p:selectOneMenu>
+							<h:outputLabel value="Título:" />
+								<p:inputText maxlength="50" size="55" value="#{conexaoServerBean.conexao.titulo}" />
+							<h:outputLabel value="Descricao:" />
+								<p:inputText maxlength="50" size="55" value="#{conexaoServerBean.conexao.descricao}" />
+							<h:outputLabel value="IP/Local" />
+								<p:inputText maxlength="35" size="30" value="#{conexaoServerBean.conexao.ip}"/>
+							<h:outputLabel value="Porta" />
+								<p:inputText maxlength="15" size="15" value="#{conexaoServerBean.conexao.porta}"/>
+							<h:outputLabel value="Schema" />
+								<p:inputText maxlength="50" size="55" value="#{conexaoServerBean.conexao.schema}"/>
+							<h:outputLabel value="Usuario" />
+								<p:inputText maxlength="20" size="15" value="#{conexaoServerBean.conexao.usuario}"/>
+							<h:outputLabel value="Senha" />
+								<p:inputText maxlength="15" size="15" value="#{conexaoServerBean.conexao.senha}"/>
+							
+	         		</h:panelGrid>
+	         		
+	         		<h:panelGrid columns="2">
+						<p:commandButton value="Testar" icon="ui-icon-refresh" action="#{conexaoServerBean.testar}"/>
+						<p:commandButton value="Salvar" icon="ui-icon-check"   action="#{conexaoServerBean.salvar}"/>
+					</h:panelGrid>
+				</h:form>
+         			
+			</p:panel>	
+			
+			<br></br>
+			
+			<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="Conexões" />
+					</f:facet>
+			</p:toolbar>
+			
+			<p:dataTable id="tblConexoes" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true" 
+							  value="#{conexaoLocalBean.conexoes}" var="conexao"   >
+						
+				        <p:column style="width:16px">
+				            <p:rowToggler />
+				        </p:column>
+				        <p:column headerText="Titulo" >
+				            <h:outputText value="#{conexao.titulo}" />
+				        </p:column>
+				         <p:column headerText="IP" >
+				            <h:outputText value="#{conexao.ip}" />
+				        </p:column>
+				        <p:column headerText="Opções" style = "width:18%" exportable="false">
+				           
+				            <p:commandButton value="Excluir" icon="ui-icon-trash" actionListener="#{conexaoServerBean.excluir}" update="mensagem :frmBases:tblConexoes">
+				             	<p:confirm header="Confirmação" message="Deseja excluir a conexão?" icon="ui-icon-alert"/>
+				            	<f:attribute name="conexaoSelecionada" value="#{conexao}"/>
+							</p:commandButton>	
+							 <p:commandButton value="Editar" icon="ui-icon-pencil" actionListener="#{conexaoServerBean.editar}" update=":frmBases:tblConexoes" 
+				            	oncomplete="PF('dialogo').show();"  >
+				            	<f:param name="concod" value="#{conexao.codigo}"/>
+				            </p:commandButton>
+				           
+				           
+				        </p:column>
+				        
+				 		
+				</p:dataTable>
+			
+			
+			
+			
+				
+				
+					
+					
+	         		
+	    	
+         		
+         		
+         		
+		
+			
+
+		</ui:define>
+	</ui:composition>
+
+</html>

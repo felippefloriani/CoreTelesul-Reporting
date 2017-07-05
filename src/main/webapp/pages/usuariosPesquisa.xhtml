@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:composition template = "/template/modeloGeral.xhtml">
+		<ui:define name="conteudo">
+		<f:metadata>
+				
+				<!--   
+				<f:event listener="#{usuarioBean.carregarPesquisa}" type="preRenderView"/>
+				-->
+			</f:metadata>
+			
+			<p:growl id="mensagem" />
+			<h:form id="frmUsuarios">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="Usuários" />
+					</f:facet>
+				</p:toolbar>
+				<p:panelGrid>
+					<p:commandButton value="Novo" icon="ui-icon-plusthick" actionListener="#{usuarioBean.novo}" oncomplete="PF('dialog').show();" 
+					update="frmUsuCad:pnlUsuCad1"
+					/>
+				</p:panelGrid>
+				<p:dataTable id="tblUsuarios" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true" 
+							  value="#{usuarioBean.usuarios}" var="usuario"   >
+						
+				        <p:column headerText="Nome" filterBy="#{usuario.nome}" sortBy="#{usuario.nome}">
+				            <h:outputText value="#{usuario.nome}" />
+				        </p:column>
+				        <p:column headerText="Perfil" style = "width:20%" filterBy="#{usuario.perfil}" sortBy="#{usuario.perfil}">
+				            <h:outputText  value="#{usuario.perfil}"/>
+				        </p:column>
+				        <p:column headerText="Opções" style = "width:18%" exportable="false">
+				            <p:commandButton value="Excluir" icon="ui-icon-trash" actionListener="#{usuarioBean.excluir}" update="mensagem :frmUsuarios:tblUsuarios">
+				             	<p:confirm header="Confirmação" message="Deseja excluir o usuário?" icon="ui-icon-alert"/>
+				            	<f:attribute name="usuarioSelecionado" value="#{usuario}"/>
+							</p:commandButton>				            
+				            <p:commandButton value="Editar" icon="ui-icon-pencil" actionListener="#{usuarioBean.editar}" update=":frmUsuarios:tblUsuarios" 
+				            	oncomplete="PF('dialogo').show();"  >
+				            	<f:param name="usucod" value="#{usuario.codigo}"/>
+				            </p:commandButton>
+				        </p:column>
+				 		
+				</p:dataTable>
+				
+				<p:confirmDialog global="true">
+					<p:commandButton value="Sim" type="buton" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="buton" styleClass="ui-confirmdialog-yes" icon="ui-icon-close" />
+				</p:confirmDialog>
+				
+				
+			</h:form>
+			
+			<!-- Dialog -->
+			<p:dialog header="Cadastro de Usuários" widgetVar="dialog" draggable="false" resizable="false" modal="false" closable="true">
+				<h:form id="frmUsuCad">
+				
+					<h:panelGrid id="pnlUsuCad1" columns="2">
+						<h:outputLabel value="Nome:" />
+						<p:inputText maxlength="50" size="55" value="#{usuarioBean.usuario.nome}" />
+						<h:outputLabel value="Email:" />
+						<p:inputText maxlength="50" size="55" value="#{usuarioBean.usuario.email}" />
+						<p:outputLabel value="Senha:" />
+						<p:password maxlength="08" size="30"  redisplay="false" readonly="false" value="#{usuarioBean.usuario.senha}"/>
+						
+						<h:outputLabel value="Perfil:" />
+						<p:selectOneMenu value="#{usuarioBean.usuario.perfil}" >
+							<f:selectItem itemValue="" itemLabel="Selecione:"/>
+							<f:selectItem itemValue="Administrador" itemLabel="Adminstrador"/>
+							<f:selectItem itemValue="Relatórios" itemLabel="Relatórios"/>
+							<f:selectItem itemValue="Gráficos" itemLabel="Gráficos"/>
+						</p:selectOneMenu>
+						
+					</h:panelGrid>
+					
+					<br></br>
+					
+					<h:panelGrid id="pnlUsuCad2" columns="5">	
+						<p:commandButton value="Salvar" icon="ui-icon-check" actionListener="#{usuarioBean.salvar}" update=":mensagem :frmUsuCad:pnlUsuCad1 :frmUsuarios:tblUsuarios" /> 
+					</h:panelGrid>	
+
+				</h:form>
+		
+			</p:dialog>
+			
+			
+
+		</ui:define>
+	</ui:composition>
+
+</html>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<ui:composition template = "/template/modeloGeral.xhtml">
+		<ui:define name="conteudo">
+			<f:metadata>
+			</f:metadata>
+			<h:form id="form">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="Relatórios" />
+					</f:facet>
+				</p:toolbar>
+				<p:dataTable id="tblRelatórios" emptyMessage="Nenhum registro encontrado!" rows="20" paginator="true"  value="#{atributosDaPesquisaBean.relatorioList}" var="relatorio" 
+							 selectionMode="single" selection="#{atributosDaPesquisaBean.relatorio}" rowKey="#{relatorio.codigo}" >
+					<f:facet name="header">
+				    </f:facet>
+				    
+				     <p:ajax event="rowSelect"  listener="#{atributosDaPesquisaBean.carregaAtributosDaPesquisa}" oncomplete="PF('relDialog').show()" update="form"/>
+				    
+				   
+				        
+				   	<p:column headerText="Nome" filterBy="#{relatorio.nome}" sortBy="#{relatorio.nome}" style = "width:20%">
+				    	<h:outputText value="#{relatorio.nome}" />
+				   	</p:column>
+				   	
+				   	<p:column headerText="SubGrupo" style = "width:20%">
+				    	<h:outputText  value="#{relatorio.subGrupoRelatorio.nome}"/>
+				   	</p:column>
+				   	
+				   	<p:column headerText="Grupo" style = "width:20%">
+				    	<h:outputText  value="#{relatorio.subGrupoRelatorio.grupoRelatorio.nome}"/>
+				   	</p:column>
+				   	
+				   	<p:column headerText="Conexao" style = "width:20%">
+				    	<h:outputText  value="#{relatorio.conexao.titulo}"/>
+				   	</p:column>
+				   	
+				</p:dataTable>
+				
+				<h:panelGrid columns="4"> 
+					<p:commandButton value="Novo" icon="ui-icon-plus" action="/pages/modeloRelatorios.xhtml?faces-redirect=true"/>	
+				</h:panelGrid>
+								
+				<p:dialog header="Filtros #{atributosDaPesquisaBean.relatorio.nome}" widgetVar="relDialog" modal="false" visible= "#{atributosDaPesquisaBean.ehPraMostrarDialog}" resizable="false"  style="width:700px;height:410px" >
+        			<p:scrollPanel mode="native" style="width:700px;height:400px;margin-bottom:10px;">
+	        		 	<c:forEach items="#{atributosDaPesquisaBean.atributosDaPesquisaList}" var="adp" varStatus="loop">
+		        			<p:panel header="#{adp.alias}" toggleable="true" toggleSpeed="500" style="margin-bottom:5px;" collapsed="#{atributosDaPesquisaBean.colunaAnalisada ne loop.index}">
+								<p:ajax event="toggle" listener="#{atributosDaPesquisaBean.handleToggle(loop.index)}" />
+								
+								<p:commandButton value="Atualizar" icon="ui-icon-pencil" style="float:right;" action="#{atributosDaPesquisaBean.atualizarRelatorio(loop.index)}"/>
+								
+								<h:panelGrid columns="5" cellpadding="10">
+								
+		        					<p:inputText maxlength="50" size="90" value = "#{adp.clausula}" rendered="#{adp.tipo ne 'dataInicio' and adp.tipo ne 'dataEntre' and adp.tipo ne 'dataFim'}"/>
+		        					
+		        					<p:selectOneMenu id ="tipo" value="#{adp.tipo}"  rendered="#{adp.tipo eq 'dataInicio' or adp.tipo eq 'dataEntre' or adp.tipo eq 'dataFim'}">
+									 	<f:selectItem itemValue="dataInicio" itemLabel="A partir" />
+										<f:selectItem itemValue="dataEntre" itemLabel="Entre" />
+										<f:selectItem itemValue="dataFim" itemLabel="Até" />
+										<p:ajax event="change" listener="#{atributosDaPesquisaBean.atualizarRelatorio(adp)}" />
+									</p:selectOneMenu>
+									
+									<p:outputLabel for="cal1"  rendered="#{adp.tipo eq 'dataInicio' or adp.tipo eq 'dataEntre' or adp.tipo eq 'dataFim'}"/>														
+									<p:calendar id="cal1" value="#{adp.dataInicio}" mode="inline" locale="pt" navigator="true" pattern="dd-MM-yyyy" rendered="#{adp.tipo eq 'dataInicio' or adp.tipo eq 'dataEntre' or adp.tipo eq 'dataFim'}">
+			       						<p:ajax event="dateSelect" listener="#{atributosDaPesquisaBean.onDateSelect}" />
+										<f:param value="#{loop.index}" name="coluna"/>  
+										<f:param value="0" name="calendarioIndex"/>  
+									</p:calendar>
+			    						
+			    					<p:outputLabel for="cal2"  rendered="#{adp.tipo eq 'dataEntre'}" />
+									<p:calendar id = "cal2" value="#{adp.dataFim}" mode="inline" locale="pt" navigator="true" pattern="dd-MM-yyyy" rendered="#{adp.tipo eq 'dataEntre'}">
+			       						<p:ajax event="dateSelect" listener="#{atributosDaPesquisaBean.onDateSelect}" />
+										<f:param value="#{loop.index}" name="coluna"/>  
+										<f:param value="1" name="calendarioIndex"/>  
+									</p:calendar>
+			    				</h:panelGrid>
+			    			</p:panel>
+		                </c:forEach>
+        			</p:scrollPanel> 
+        			
+        			<h:panelGrid columns="2" cellpadding="10">			
+               			<p:commandButton value="Gerar Relatorio" icon="ui-icon-document" action="#{atributosDaPesquisaBean.geraRelatorio}"/>
+               			<p:commandButton value="Excluir Relatorio" icon=" ui-icon-circle-minus" action="#{relatorioBean.excluiRelatorio(relatorio.codigo)}"/>	
+               		</h:panelGrid>	
+				</p:dialog>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</html>

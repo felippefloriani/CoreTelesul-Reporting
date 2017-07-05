@@ -1,0 +1,17 @@
+package br.com.telesul.util;
+
+import javax.ws.rs.ApplicationPath;
+
+import org.glassfish.jersey.server.ResourceConfig;
+
+@ApplicationPath("rest")
+public class CoreTelesulResourceConfig extends ResourceConfig{
+	
+	public CoreTelesulResourceConfig(){
+		packages("br.com.telesul.service");
+	}
+	
+	
+	
+
+}

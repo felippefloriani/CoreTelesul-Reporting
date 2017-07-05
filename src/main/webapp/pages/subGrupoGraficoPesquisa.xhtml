@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:composition template = "/template/modeloGeral.xhtml">
+		<ui:define name="conteudo">
+			<f:metadata>
+			</f:metadata>
+			
+			<h:form>
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="Subgrupos de Gráficos" />
+					</f:facet>
+				</p:toolbar>
+				
+				<p:dataTable id="tblSubGruposGraficos" emptyMessage="Nenhum registro encontrado!" rows="5" paginator="true"  
+				value = "#{subGrupoGraficoBean.listaSubGrupoGraficos}" var="subGrupoGrafico">
+					<f:facet name="header">
+				    </f:facet>
+				    <p:column style="width:16px">
+				    	<p:rowToggler />
+				    </p:column>
+				    <p:column headerText="Nome" filterBy="#{subGrupoGraficoBean.nome}" sortBy="#{subGrupoGraficoBean.nome}">
+				    	<h:outputText value="#{subGrupoGraficoBean.nome}" />
+				     </p:column>
+			 	</p:dataTable>
+			 	
+			 	<h:panelGrid columns="4"> 
+					<p:commandButton value="Novo" icon="ui-icon-plus" oncomplete="PF('dialogo').show();"/>	
+				</h:panelGrid>
+				</h:form>
+				
+				<!-- Dialog para botao "Novo" -->
+				<p:dialog header="Cadastro de Subgrupo de Gráficos" widgetVar="dialogo" draggable="false" resizable="false" modal="false" closable="false" icon="ui-icon-person">
+					<h:form>
+						<h:panelGrid columns="2">
+							<p:outputLabel value="Nome:"/>
+							<p:inputText maxlength="50" size="50" value="#{subGrupoGraficoBean.nome}" />
+						
+							<p:outputLabel value="Grupo Gráfico:" />
+							<p:selectOneMenu value="#{subGrupoGraficoBean.grupoGraficoSelecionado}"	converter="GrupoGraficoConverter">
+								<f:selectItems value="#{subGrupoGraficoBean.listaGrupoGraficos}" var="grupoGrafico" itemValue="#{grupoGrafico}" itemLabel="#{grupoGrafico.nome}" />
+							</p:selectOneMenu>
+						</h:panelGrid>
+						<h:panelGrid columns="2">
+							<p:commandButton value="Salvar" icon="ui-icon-check" action="#{subGrupoGraficoBean.salvar}" />
+							<p:commandButton value="Fechar" icon="ui-icon-close" oncomplete="PF('dialogo').hide();" />
+						</h:panelGrid>
+					</h:form>
+				</p:dialog>
+				
+		</ui:define>
+	</ui:composition>
+</html>

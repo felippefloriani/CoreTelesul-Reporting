@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/template/modeloGeral.xhtml">
+	<ui:define name="conteudo">
+		<f:metadata>
+		<!-- <f:event listener="#{usuarioBean.carregarPesquisa}" type="preRenderView"/>	-->
+		</f:metadata>
+		<p:growl id="mensagem" />
+		<h:form id="frmModCad2">
+			
+			<p:panel id="pnlModCad" header="Novo Relatório" toggleable="true" toggleSpeed="500" style="margin-bottom:10px;">
+				<p:ajax event="toggle" listener="#{relatorioBean.handleToggle}" />
+				 
+				<h:panelGrid id="pnl1"  columns="6"  cellpadding="12">
+					<h:outputLabel value="Grupo" />
+					<p:selectOneMenu value="#{relatorioBean.grupoRelatorioSelecionado}"	converter="GrupoConverter">
+						<f:selectItem itemLabel="-------------------" itemValue=""/>
+						<f:selectItems value="#{relatorioBean.listaGrupoRelatorios}" var="grupoRelatorio" itemValue="#{grupoRelatorio}" itemLabel="#{grupoRelatorio.nome}"/>
+						<f:ajax event="change" listener="#{relatorioBean.carregaSubGrupoRelatorio}" />
+					</p:selectOneMenu>
+					
+					<h:outputLabel value="Subgrupo" />
+					<p:selectOneMenu value="#{relatorioBean.subGrupoRelatorioSelecionado}"	converter="SubGrupoConverter">
+						<f:selectItem itemLabel="-------------------" itemValue=""/>
+						<f:selectItems value="#{relatorioBean.listaSubGrupoRelatorios}" var="subGrupoRelatorio" itemValue="#{subGrupoRelatorio}" itemLabel="#{subGrupoRelatorio.nome}" />
+					</p:selectOneMenu>
+				
+					<h:outputLabel value="Conexão:" />
+					<p:selectOneMenu value="#{relatorioBean.conexaoSelecionada}" converter="ConexaoConverter">
+						<f:selectItem itemLabel="-------------------" itemValue=""/>
+						<f:selectItems value="#{relatorioBean.listaConexoes}" var="conexao" itemValue="#{conexao}" itemLabel="#{conexao.titulo}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+				
+				<h:panelGrid id="pnl2"  columns="2" cellpadding="5" style="margin-bottom:10px;">	
+					<h:outputLabel value="Nome:" />
+					<p:inputText maxlength="50" size="90" id= "reportNome" value = "#{relatorioBean.nome}"/>
+					
+					<h:outputLabel value="Descrição" />
+					<p:inputText maxlength="50" size="90" id= "reportDescricao" value = "#{relatorioBean.descricao}"/>
+					
+					<h:outputLabel value="Consulta: " />
+					<p:inputTextarea rows="15" cols="125" id="reportQuery" value="#{relatorioBean.query}" />
+				</h:panelGrid>
+								
+			<p:commandButton value="Detalhes da Consulta" icon="ui-icon-wrench"  action="#{relatorioBean.inicializaComponentes}" oncomplete="PF('dialog').show();"/>
+				
+			</p:panel>	
+			<p:panel id="pnlTotCad" header="Detalhes da Consulta" toggleable="true" toggleSpeed="500" style="margin-bottom:10px;" rendered="#{relatorioBean.clicouEmGerarTotalizadores}">
+				<p:ajax event="toggle" listener="#{relatorioBean.handleToggle}" />
+				<c:forEach items="#{relatorioBean.mapaAtributosPesquisa}" var="entry" varStatus="loop">
+					<p:panel id="pnlTotCad2" style="margin-bottom:10px;">
+						<p:fieldset legend="#{entry.value.alias}" toggleable="true" toggleSpeed="500" styleClass="greyBackground" collapsed="#{relatorioBean.colunaQueEstaSendoDetalhada ne loop.index}">
+							<p:ajax event="toggle" listener="#{relatorioBean.handleToggle}" />
+							 
+							 <p:panel id="pnlColunas" header ="Colunas" style="margin-bottom:10px;">
+							 	<h:panelGrid columns="5" cellpadding="5">
+							 	
+								 	<p:selectOneMenu value="#{entry.value.mostraColuna}" >
+								 		<f:selectItem itemValue="mostrar" itemLabel="Mostrar" />
+										<f:selectItem itemValue="ocultar" itemLabel="Ocultar" />
+										<p:ajax listener="#{relatorioBean.deveMostrarColuna}"/>
+									</p:selectOneMenu>
+								
+									<p:outputLabel value=" Alias" />
+									<p:inputText maxlength="50" size="55" value="#{entry.value.dummyAlias}">
+										<p:ajax listener="#{relatorioBean.adicionaAlias(loop.index)}"/>
+									</p:inputText>
+
+									<p:outputLabel value="Formato" />
+									<p:selectOneMenu id="formato" value="#{entry.value.tipo}">
+										<f:selectItems value="#{relatorioBean.tipos}" />
+										<p:ajax listener="#{relatorioBean.adicionaTipo(loop.index)}"/>
+									</p:selectOneMenu>
+									
+								</h:panelGrid>
+							</p:panel>
+								
+							<p:panel id="pnlFiltroData" header="Filtro"  style="margin-bottom:10px;" rendered="#{entry.value.tipo eq 'dataInicio' or entry.value.tipo eq 'dataEntre' or entry.value.tipo eq 'dataFim'}">	
+								<h:panelGrid columns="5" cellpadding="5">
+								
+									<p:selectOneMenu value="#{entry.value.tipo}"  >
+								 		<f:selectItem itemValue="dataInicio" itemLabel="A partir" />
+										<f:selectItem itemValue="dataEntre" itemLabel="Entre" />
+										<f:selectItem itemValue="dataFim" itemLabel="Até" />
+									</p:selectOneMenu>
+									
+									<p:outputLabel for="cal1" />														
+									<p:calendar id="cal1" value="#{entry.value.dataInicio}" mode="inline" locale="br" navigator="true" pattern="MM-dd-yyyy"> 
+		       							<p:ajax event="dateSelect" listener="#{relatorioBean.onDateSelect}" />
+										<f:param value="#{loop.index}" name="coluna"/>  
+										<f:param value="0" name="calendarioIndex"/>        								 
+		    						</p:calendar>
+		    						
+		    						<p:outputLabel for="cal2" />
+									<p:calendar id = "cal2" value="#{entry.value.dataFim}" mode="inline" locale="br" navigator="true" pattern="MM-dd-yyyy" rendered="#{entry.value.tipo eq 'dataEntre'}">
+		       							<p:ajax event="dateSelect" listener="#{relatorioBean.onDateSelect}" />
+										<f:param value="#{loop.index}" name="coluna"/>  
+										<f:param value="1" name="calendarioIndex"/>        								 
+		    						</p:calendar>
+		    						
+		    					</h:panelGrid>
+							</p:panel>
+							
+							<p:panel id="pnlFiltroTexto" header="Filtro"  style="margin-bottom:10px;" rendered="#{entry.value.tipo ne 'dataInicio' and entry.value.tipo ne 'dataEntre' and entry.value.tipo ne 'dataFim'}">	
+								<p:inputTextarea rows="3" cols="133" id="result" value="#{entry.value.clausula}" >
+									<p:ajax listener="#{relatorioBean.adicionaClausula(lopp.index)}" />
+								</p:inputTextarea>
+							</p:panel>
+							
+							<p:panel header="Totalizador" style="margin-bottom:10px;">
+								<p:inputTextarea rows="3" cols="127" id="result" value="#{entry.value.operacao}">
+									<p:ajax listener="#{relatorioBean.adicionaOperacao(lopp.index)}" />
+								</p:inputTextarea>
+							</p:panel>
+							
+						</p:fieldset>
+					</p:panel>
+				</c:forEach>
+			</p:panel>
+			<h:panelGrid columns="2" rendered="#{relatorioBean.clicouEmGerarTotalizadores}">
+				<p:commandButton value="Gerar Relatorio" icon="ui-icon-refresh"  action="#{relatorioBean.geraRelatorio}" update=":mensagem"/>
+				<p:commandButton value="Salvar Relatorio" icon="ui-icon-refresh"  action="#{relatorioBean.salvaRelatorio}" update=":mensagem"/>
+			</h:panelGrid>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

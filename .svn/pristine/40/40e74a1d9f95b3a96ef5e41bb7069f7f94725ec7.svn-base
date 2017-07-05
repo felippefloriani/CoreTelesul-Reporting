@@ -1,0 +1,8 @@
+br/com/telesul/util/HibernateUtil.class
+br/com/telesul/dao/UsuarioDAO.class
+br/com/telesul/domain/Usuario.class
+br/com/telesul/util/CoreTelesulResourceConfig.class
+br/com/telesul/dao/GenericDAO.class
+br/com/telesul/domain/GenericDomain.class
+br/com/telesul/main/GeraTabela.class
+br/com/telesul/service/UsuarioService.class

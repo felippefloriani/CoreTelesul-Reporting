@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+
+.ui-widget, .ui-widget .ui-widget {
+	font-size: 95% !important;
+}
+
+
+.rodape{
+	font-size: x-small;
+	text-align: right;
+}
+
+.greyBackground{
+	background-color: rgb(245,245,245);
+}
+
+.rightAlign {
+    text-align: right;
+}
+
+
